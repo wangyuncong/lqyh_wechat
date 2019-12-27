@@ -82,6 +82,7 @@ export default {
   },
   async mounted() {
     this._Vuex.dispatch("orderList");
+    this.$root.dateMsg = ''
   },
   methods: {
     async loadTop() {
@@ -148,7 +149,7 @@ export default {
         path: "/orderFormMsg",
         query: {
           id: item.id,
-          date: item.createtime.split(" ")[0],
+          // date: item.createtime.split(" ")[0],
           realamount: item.realamount
         }
       });

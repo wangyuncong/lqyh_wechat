@@ -1,7 +1,7 @@
 <template>
   <div class="paySuccess">
     <div v-if="isPaySuccess" class="content">
-      <img src='../../../static/images/pay_success.png'/>
+      <img src='../../../static/images/pay_success.png?1'/>
       <div>您的订单已支付成功</div>
       <p>稍后营养师会与您沟通配餐情况</p>
       <span @click="goMessage">补充个人信息</span>
@@ -16,26 +16,21 @@ export default {
   name:'paySuccess',
   data(){
     return{
-      isPaySuccess:true,
+      isPaySuccess:false,
       s:null
     }
   },
   created(){
     let orderid = this.$route.query.orderid
-    var num = 0;
-    var max = 10;
-    var intervalId = null;
 
-    // function incrementNumber(){
-    //   num++;
-    //   if(num == max){
-    //       clearInterval(innervalId);
-    //       console.log('done');
-    //   }
-    // }
-
-    // intervalId = 
-    // window.setInterval(console.log('11'),500);
+    // 每隔  1 秒钟 运行一次，发送一个 ajax 请求
+    let _this = this
+    function runEvery10Sec() { 
+        // 1000 * 10 = 10 秒钟
+        _this.s = setTimeout(runEvery10Sec , 1000 * 1 ); 
+        _this.getPayStatus(orderid)
+    }
+    runEvery10Sec()
   },
   methods:{
     goMessage(){
@@ -59,7 +54,7 @@ export default {
         success: data => {
           if (data.status == "success") {
             this.isPaySuccess = true
-            window.clearInterval(this.s)
+             window.clearTimeout(this.s)
           }
         }
       })
@@ -99,7 +94,7 @@ export default {
       }
       >span{
         display: block;
-        background:#41B396;
+        background:#41b396;
         // padding:9px 23px;
         border-radius: 15px;  
         color: #fff;
@@ -117,7 +112,7 @@ export default {
       text-align: center;
       line-height: 50px;
       font-size: 16px;
-      background:rgba(65,180,151,1);
+      background:#41b396;
       position: fixed;
       bottom: 0px;
       width:100%;

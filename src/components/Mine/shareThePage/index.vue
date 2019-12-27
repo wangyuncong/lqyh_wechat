@@ -1,3 +1,11 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: 
+ * @Date: 2019-09-10 17:49:49
+ * @LastEditors: 
+ * @LastEditTime: 2019-11-11 15:09:29
+ -->
 <template>
   <div class="shareThePage">
     <div class="shareThePage-title">
@@ -22,7 +30,7 @@
       <p>
         接受邀请，关注我们
         <br />获取
-        <span style="color:red;">10元</span>优惠红包
+        <span style="color:red;">新人专享优惠券</span>
       </p>
       <img class="img" src="/static/images/liaotianimg.png" alt />
     </div>
@@ -54,6 +62,36 @@ export default {
           return MessageBox.alert("二维码获取失败，请尝试刷新网页");
         }
         this.src = res.data.qrcodeinfo;
+
+        // 分享
+        if (id == "") {
+          return;
+        }
+        var { desc, title, imgUrl } = this.$root.share;
+        var url = location.origin + location.pathname;
+        url += `#/shareThePage?userid=${id}`;
+        wx.updateAppMessageShareData({
+          title,
+          desc, // 分享描述
+          link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+          imgUrl
+        });
+        wx.updateTimelineShareData({
+          title,
+          link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+          imgUrl
+        });
+        wx.onMenuShareAppMessage({
+          title,
+          desc, // 分享描述
+          link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+          imgUrl
+        });
+        wx.onMenuShareTimeline({
+          title,
+          link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+          imgUrl
+        });
       }
     });
   },

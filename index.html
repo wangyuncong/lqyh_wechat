@@ -1,17 +1,68 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: Zhang Zi Fang
+ * @Date: 2019-09-10 17:49:49
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2019-11-19 17:43:31
+ -->
 <!DOCTYPE html>
 <html>
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>另起一行</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+  <title></title>
 </head>
+
 <body>
   <div id="app"></div>
   <script src="https://res2.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts-en.common.js" async></script>
   <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts.min.js" async></script>
   <!-- built files will be auto injected -->
+  <script type="text/javascript">
+    (function () {
+      if (typeof WeixinJSBridge == "object" && typeof WeixinJSBridge.invoke == "function") {
+        handleFontSize();
+      } else {
+        if (document.addEventListener) {
+
+          document.addEventListener("WeixinJSBridgeReady", handleFontSize, false);
+
+        } else if (document.attachEvent) {
+
+          document.attachEvent("WeixinJSBridgeReady", handleFontSize);
+
+          document.attachEvent("onWeixinJSBridgeReady", handleFontSize);
+        }
+      }
+
+      function handleFontSize() {
+
+        // 设置网页字体为默认大小
+        WeixinJSBridge.invoke('setFontSizeCallback', {
+
+          'fontSize': 0
+
+        });
+        // 重写设置网页字体大小的事件
+        WeixinJSBridge.on('menu:setfont', function () {
+
+          WeixinJSBridge.invoke('setFontSizeCallback', {
+
+            'fontSize': 0
+
+          });
+
+        });
+
+      }
+    })();
+
+  </script>
 </body>
 
 </html>

@@ -1,3 +1,11 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: 
+ * @Date: 2019-09-10 17:49:50
+ * @LastEditors: 
+ * @LastEditTime: 2019-11-19 14:13:08
+ -->
 <template>
   <div class="discounts">
     <div class="discounts-title">
@@ -6,6 +14,10 @@
       <span @click="status = 2" :class="status == 2 ? 'discounts-title-select' : ''">已过期 ({{past}})</span>
     </div>
     <div>
+      <div v-if="wu" style="color:#999;text-align: center;margin-top:50px">
+        <img style="width:100px;margin-bottom:10px;" src="static/images/zanwuxiaoshou.png" alt />
+        <p>暂无此类优惠券</p>
+      </div>
       <mt-loadmore
         :top-method="loadTop"
         :bottom-method="loadBottom"
@@ -44,10 +56,11 @@ export default {
   name: "Discounts",
   data() {
     return {
-      status: 0,
+      status: '',
       wei: 0,
-      src: "static/images/03dd34092ab784ca59cf1827d1e2f48.png",
+      src: "static/images/03dd34092ab784ca59cf1827d1e2f48.png?3",
       used: 0,
+      wu: false,
       past: 0,
       allLoaded: false,
       infoList: []
@@ -61,6 +74,15 @@ export default {
         return "已用";
       } else if (va == 2) {
         return "过期";
+      }
+    }
+  },
+  watch: {
+    status(res) {
+      if (this.infoList.filter(s => s.status == this.status).length == 0) {
+        this.wu = true;
+      } else {
+        this.wu = false;
       }
     }
   },
@@ -85,6 +107,7 @@ export default {
         this.wei = res.data.filter(s => s.status == 0).length;
         this.used = res.data.filter(s => s.status == 1).length;
         this.past = res.data.filter(s => s.status == 2).length;
+        this.status = 0
       }
     });
   }

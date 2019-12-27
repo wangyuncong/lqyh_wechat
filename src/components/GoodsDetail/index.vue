@@ -13,7 +13,7 @@
       </div>
       <div class="price_box">
         <p class='count_price'>￥{{(this.$store.goods.state.goodsDetail.foodprice/100).toFixed(2)}}<span v-if="this.$route.query.categoryName == '套餐'">/天</span></p>
-        <p v-if="this.$route.query.categoryName == '特医食品'" class="add_del shop_add">
+        <p v-if="this.$route.query.categoryName != '套餐'" class="add_del shop_add">
           <span :class="$store.goods.state.goodsDetail.quantity<=0?'none':''" v-on:click="num($store.goods.state.goodsDetail.id,'subtraction')">-</span>
           <span :class="$store.goods.state.goodsDetail.quantity<=0?'none':''">{{$store.goods.state.goodsDetail.quantity}}</span>
           <span v-on:click="num($store.goods.state.goodsDetail.id,'add')">+</span>
@@ -55,7 +55,7 @@
     <div class="footer">
       <p class='price'><span>合计</span>￥{{(Number(this.$store.goods.state.goodsDetail.quantity) * (this.$store.goods.state.goodsDetail.foodprice/100)).toFixed(2)}}</p>
       <p @click="createOrder" class="pay">
-        <span>去支付</span>
+        <span>继续下单</span>
         <span class="jiantou"></span>
       </p>
     </div>
@@ -83,36 +83,85 @@ export default {
   },
   created(){
     let store = this.$store.goods;
+    if(this.time_range('00:00','15:59')){
+      this.startDate = new Date(new Date().getTime()+ 24*60*60*1000*1 )
+      // this.startDate = new Date(new Date().getTime()- 24*60*60*1000*10 )
+    }else{
+      // console.log(new Date()+1,'new Date()')
+      this.startDate = new Date(new Date().getTime() + 24*60*60*1000*2)
+    }
+    
     this.getGoodsDetail()
     // store.dispatch("getCartInfo", { userId: store.state.userId })
     // console.log(store.state.userId, store.state.goodsDetail)
   },
   methods:{
+    time_range (beginTime, endTime) {
+        var strb = beginTime.split (":");
+        if (strb.length != 2) {
+            return false;
+        }
+    
+        var stre = endTime.split (":");
+        if (stre.length != 2) {
+            return false;
+      }
+
+      var b = new Date ();
+      var e = new Date ();
+      var n = new Date ();
+
+      b.setHours (strb[0]);
+      b.setMinutes (strb[1]);
+      e.setHours (stre[0]);
+      e.setMinutes (stre[1]);
+
+      if (n.getTime () - b.getTime () > 0 && n.getTime () - e.getTime () < 0) {
+          return true;
+      } else {
+          return false;
+      }
+    },
     createOrder(){
-      this.$router.push({path:'/bjyyq/createOrder',query:{id:this.$route.query.id,type:'taocan'}})
+      if(this.$route.query.categoryName == '套餐'){
+        if(this.tianshu>0){
+          this.$router.push({path:'/bjyyq/createOrder',query:{id:this.$route.query.id,type:'taocan'}})
+        }else{
+          Toast({
+            message: "请选择配餐时间段"
+          });
+        }
+      }else if(this.$route.query.categoryName == '营养咨询'){
+        this.$router.push({path:'/bjyyq/createOrder',query:{id:this.$route.query.id,type:'yyzx'}})
+      }else if(this.$route.query.categoryName == '特医食品'){
+        this.$router.push({path:'/bjyyq/createOrder',query:{id:this.$route.query.id,type:'notaocao'}})
+      }
+      
     },
     formatDate(date){
       date = new Date(date);
       var y=date.getFullYear();
       var m=date.getMonth()+1;
       var d=date.getDate();
-      // m = m<10?("0"+m):m;
-      // d = d<10?("0"+d):d;
+      m = m<10?("0"+m):m;
+      d = d<10?("0"+d):d;
       return y+"-"+m+"-"+d;
     },
     fun_date(aa,val){
-      var date1 = new Date(val),
-      time1=date1.getFullYear()+"-"+(date1.getMonth()+1)+"-"+date1.getDate();//time1表示当前时间
-      var date2 = new Date(date1);
-      date2.setDate(date1.getDate()+aa);
-      var time2 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate()
+      // var date1 = new Date(val),
+      // time1=date1.getFullYear()+"-"+(date1.getMonth()+1)+"-"+date1.getDate();//time1表示当前时间
+      // var date2 = new Date(date1);
+      // date2.setDate(date1.getDate()+aa);
+      // var time2 = date2.getFullYear()+"-"+(date2.getMonth()+1)+"-"+date2.getDate()
+      let time2 = new Date(new Date(val).getTime() + 24*60*60*1000*aa)
+      console.log(time2,'time2')
       return time2
     },
     handleConfirm(val){
       console.log(val,'val')
       this.endDate = val
       this.pickerValue.start = this.formatDate(val)
-      this.pickerValue.end = this.fun_date(7,val)
+      this.pickerValue.end = this.formatDate(this.fun_date(6,val))
       this.getDateDiff(this.pickerValue.start,this.pickerValue.end)
       let store = this.$store.goods;
       console.log(this.$route.query,'this.$route.query')
@@ -157,7 +206,42 @@ export default {
         }
       })
     },
-    getDateDiff(date1,date2){
+    getDateDiff(begin, end) {
+      // 在时间Date的原型中定义一个format方法
+      Date.prototype.format = function() {
+        var s = ""; // 定义一个字符串，目的，要时间格式按照我们的要求拼接
+        var month = this.getMonth() + 1;
+        var day = this.getDate();
+        if (month >= 1 && month <= 9) {
+          month = "0" + month;
+        }
+        if (day >= 0 && day <= 9) {
+          day = "0" + day;
+        }
+        s += this.getFullYear() + "-";
+        s += month + "-";
+        s += day;
+        return s; // 得到的格式如 "2018-11-20"
+      };
+
+      var ab = begin.split("-"); // 把日期参数分割，注意，如果以'/'连接，则分割'/'
+      var ae = end.split("-");
+      var db = new Date();
+      db.setUTCFullYear(ab[0], ab[1] - 1, ab[2]); // 返回符合UTC的时间格式
+      var de = new Date();
+      de.setUTCFullYear(ae[0], ae[1] - 1, ae[2]);
+      var unixDb = db.getTime();
+      var unixDe = de.getTime();
+      var arr = [];
+      for (var k = unixDb; k <= unixDe; ) {
+        arr.push(new Date(parseInt(k)).format());
+        k = k + 24 * 60 * 60 * 1000;
+      }
+      this.tianshu = arr.length
+      // return arr;
+    },
+    getDateDiff1(date1,date2){
+      console.log(date1,date2,'date1,date2')
       date1 = date1.replace('年','-')
       date1 = date1.replace('月','-')
       date1 = date1.replace('号','-')
@@ -168,7 +252,7 @@ export default {
       var arr2=date2.split('-');
       var d1=new Date(arr1[0],arr1[1],arr1[2]);
       var d2=new Date(arr2[0],arr2[1],arr2[2]);
-      // console.log(((d2.getTime()-d1.getTime())/(1000*3600*24) + 1)<=0,(d2.getTime()-d1.getTime())/(1000*3600*24),'s]]]]')
+      console.log(d2.getTime()/(1000*3600*24),d1.getTime()/(1000*3600*24),((d2.getTime()-d1.getTime())/(1000*3600*24) + 1)<=0,(d2.getTime()-d1.getTime())/(1000*3600*24),'s]]]]')
       // if(((d2.getTime()-d1.getTime())/(1000*3600*24) + 1)<=0){
       //   return true
       // }else{
@@ -214,12 +298,21 @@ export default {
   }
 }
 </script>
+<style lang="less">
+.goodsDetail{
+  .mint-datetime-action{
+    color:#41b396!important;
+  }
+}
+
+</style>
 <style lang="less" scoped>
   .goodsDetail{
     width: 100%;
     box-sizing: border-box;
     background: #F2F2F2;
     font-size: 12px;
+    
     .shop{
       padding:0px 15px;
       background: #fff;
@@ -230,7 +323,7 @@ export default {
         &:first-child{
           margin:15px 0px;
           font-size: 16px;
-          border-left: 2px solid #41B396;
+          border-left: 2px solid #41b396;
           padding-left: 3px;
           // margin-bottom: 10px;
         }
@@ -272,6 +365,9 @@ export default {
     .goods_detail_swiper{
       width: 100%;
       height: 160px;
+      img{
+        width:100%;
+      }
     }
     .add_del{
         // position: absolute;
@@ -283,7 +379,7 @@ export default {
             display: inline-block;
             width: 20px;
             height: 20px;
-            background: #41B396;
+            background: #41b396;
             font-size: 16px;
             color: #fff;
             border-radius: 100%;
@@ -309,7 +405,7 @@ export default {
         &:first-child{
           margin:15px 0px;
           font-size: 16px;
-          border-left: 2px solid #41B396;
+          border-left: 2px solid #41b396;
           padding-left: 3px;
         }
       }
@@ -319,7 +415,7 @@ export default {
         justify-content: space-between;
         .shijian{
           font-size: 12px;
-          color:#41B396;
+          color:#41b396;
           padding:5px 0px;
         }
         .shijian_button{
@@ -334,9 +430,9 @@ export default {
         font-size:15px;
         font-family:PingFang SC;
         font-weight:500;
-        color:rgba(65,179,150,1);
+        color:#41b396;
         padding-top: 10px;
-        // background:#41B396;
+        // background:#41b396;
         // color:#fff;
         // line-height: 25px;
         // text-align: center;
@@ -350,7 +446,7 @@ export default {
     .footer{
       width: 100%;
       height: 50px;
-      background: #41B396;
+      background: #41b396;
       position: fixed;
       bottom: 0px;
       .price{

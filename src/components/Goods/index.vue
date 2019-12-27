@@ -3,7 +3,7 @@
     <!-- <form action="/apitarget/bjyyq/apimg/fileupload" enctype="multipart/form-data" method="post">
       <input type="file" name="files" />
       <input type="submit" value="提交" />
-    </form> -->
+    </form>-->
     <div v-wechat-title="$route.meta.title"></div>
     <mt-swipe :auto="3000">
       <mt-swipe-item v-for="item in this.$store.goods.state.swipers" :key="item.id">
@@ -52,7 +52,7 @@
               </div>
               <div class="price">
                 <p>￥{{(item.foodprice/100).toFixed(2)}}</p>
-                <p v-if="shopTitle == '特医食品'" class="add_del">
+                <p v-if="shopTitle != '套餐'" class="add_del">
                   <span
                     :class="item.num<=0?'none':''"
                     v-on:click.stop="num(item.foodid,'subtraction')"
@@ -61,7 +61,7 @@
                   <span v-on:click.stop="num(item.foodid,'add')">+</span>
                 </p>
                 <p v-if="shopTitle == '套餐'" @click.stop="goFoodDetails(item.foodid)" class="riqi">
-                  <mt-button size="small" type="primary">选购</mt-button>
+                  <mt-button size="small" type="primary" style="background:f3afbc">选购</mt-button>
                 </p>
               </div>
             </div>
@@ -115,7 +115,7 @@
             </div>
             <div class="shopCarMsg">
               <p>{{item.foodname}}</p>
-              <p class="count_price">￥{{(Number(item.quantity) * (item.foodprice/100)).toFixed(2)}}</p>
+              <p class="count_price">￥{{item.catagoryid==41?(Number(item.quantity) * ((Number(healthPrice)+Number(item.foodprice))/100)).toFixed(2):(Number(item.quantity) * ((Number(item.foodprice))/100)).toFixed(2)}}</p>
               <p
                 v-if="!(item.startdate!==null&&item.startdate.split('-').length>=3)"
                 class="add_del shop_add"
@@ -142,7 +142,7 @@
         </div>
       </mt-popup>
       <p @click="createOrder" class="pay">
-        <span>去支付</span>
+        <span>继续下单</span>
         <span class="jiantou"></span>
       </p>
     </div>
@@ -151,7 +151,7 @@
 
 <script>
 import Vue from "vue";
-import { Swipe, SwipeItem, Popup, Button } from "mint-ui";
+import { Swipe, SwipeItem, Popup, Button, MessageBox } from "mint-ui";
 import { setTimeout, clearTimeout } from "timers";
 import axios from "axios";
 Vue.component(Popup.name, Popup, Button);
@@ -162,31 +162,163 @@ export default {
       shopTitle: "",
       userId: "",
       isShow: false,
-      timer: null
+      timer: null,
+      healthInfo:[],
+      healthPrice:0
+      // goodsTeampleat:false
     };
   },
   beforeMount() {
-    // this.userId = sessionStorage.userId || sessionStorage.userid 
+    // new Promise((v, s) => {
+    //   if (
+    //     this._Vuex.state.userInfo.id ||
+    //     process.env.NODE_ENV !== "production"
+    //   ) {
+    //     v(this._Vuex.state.userInfo.id);
+    //   } else {
+    //     var se = setInterval(() => {
+    //       if (this._Vuex.state.userInfo.id) {
+    //         v(this._Vuex.state.userInfo.id);
+    //         clearInterval(se);
+    //       }
+    //     }, 10);
+    //   }
+    // }).then(()=>{
+    //   let store = this.$store.goods;
+    //   store.dispatch("getSwipers");
+    //   store.dispatch("getCategory").then(res => {
+    //     this.shopTitle = store.state.category[0].cname;
+    //     store
+    //       .dispatch("getCategoryFood", {
+    //         categoryId: store.state.category[0].id
+    //       })
+    //       .then(() => {
+    //         store.dispatch("getCartInfo", {
+    //           userId: sessionStorage.userId || sessionStorage.userid
+    //         })
+    //       });
+    //   });
+    // })
+    
+    // this.userId = sessionStorage.userId || sessionStorage.userid
     // process.env.NODE_ENV === "production" ? "" : (this.userId = "1");
     // let store = this.$store.goods;
     // store.commit("setUserId", this.userId);
     // sessionStorage.userId = this.userId;
   },
+  // watch: {
+  //   VuexUuserInfo() {
+  //     this.keyUserInfo();
+  //   }
+  // },
+  // computed: {
+  //   VuexUuserInfo() {
+  //     return this._Vuex.state.userInfo;
+  //   }
+  // },
   mounted() {
-    let store = this.$store.goods;
-    store.dispatch("getSwipers");
-    store.dispatch("getCategory").then(() => {
-      this.shopTitle = store.state.category[0].cname;
-      store
-        .dispatch("getCategoryFood", {
-          categoryId: store.state.category[0].id
-        })
-        .then(() => {
-          store.dispatch("getCartInfo", { userId: sessionStorage.userId || sessionStorage.userid });
-        });
-    });
+    // new Promise((v, s) => {
+    //   if (
+    //     this._Vuex.state.userInfo.id ||
+    //     process.env.NODE_ENV !== "production"
+    //   ) {
+    //     v(this._Vuex.state.userInfo.id);
+    //   } else {
+    //     var se = setInterval(() => {
+    //       if (this._Vuex.state.userInfo.id) {
+    //         v(this._Vuex.state.userInfo.id);
+    //         clearInterval(se);
+    //       }
+    //     }, 10);
+    //   }
+    // }).then(()=>{
+      let store = this.$store.goods;
+      store.dispatch("getSwipers");
+      store.dispatch("getCategory").then(res => {
+        this.shopTitle = store.state.category[0].cname;
+        store
+          .dispatch("getCategoryFood", {
+            categoryId: store.state.category[0].id
+          })
+          .then(() => {
+            store.dispatch("getCartInfo", {
+              userId: sessionStorage.userId || sessionStorage.userid
+            })
+          });
+      });
+    // })
+    // new Promise((v, s) => {
+    //   if (
+    //     this._Vuex.state.userInfo.roleid ||
+    //     process.env.NODE_ENV !== "production"
+    //   ) {
+    //     v(this._Vuex.state.userInfo.roleid);
+    //   } else {
+    //     var se = setInterval(() => {
+    //       if (this._Vuex.state.userInfo.roleid) {
+    //         v(this._Vuex.state.userInfo.roleid);
+    //         clearInterval(se);
+    //       }
+    //     }, 10);
+    //   }
+    // }).then(()=>{
+      // let store = this.$store.goods;
+      // store.dispatch("getSwipers");
+      // store.dispatch("getCategory").then(res => {
+      //   this.shopTitle = store.state.category[0].cname;
+      //   store
+      //     .dispatch("getCategoryFood", {
+      //       categoryId: store.state.category[0].id
+      //     })
+      //     .then(() => {
+      //       store.dispatch("getCartInfo", {
+      //         userId: sessionStorage.userId || sessionStorage.userid
+      //       });
+      //     });
+      // });
+    // })
+    
   },
   methods: {
+    //营养咨询服务
+    async gethealthInfo(){
+      await this.$http({
+        url: "/bjyyq/api/healthInfo",
+        data: {},
+        method: "get",
+        success: data => {
+          if(data.data.length>0){
+            this.healthInfo = data.data
+            this.healthInfo.map((item)=>{
+              this.healthPrice+=Number(item.price)
+            })
+            // this.totalPrice+=this.healthPrice
+          }
+          
+        }
+      });
+    },
+    keyUserInfo() {
+      this.$http({
+        url: "/bjyyq/api/keyUserInfo",
+        data: {
+          element: ["name"]
+        },
+        success: res => {
+          if (res.data && res.data[0] && res.data[0].datavalue) {
+            // 执行
+          } else {
+            // 商城
+            if (this.$route.fullPath === "/bjyyq/goods") {
+              // 执行
+              MessageBox("提示", "请先完善个人信息").then(s => {
+                this.$router.replace({ path: "/imessage" });
+              });
+            }
+          }
+        }
+      });
+    },
     chage(e) {
       axios({
         url: "/apitarget/bjyyq/apimg/fileupload",
@@ -213,7 +345,33 @@ export default {
       });
     },
     createOrder() {
-      this.$router.push({ path: "/bjyyq/createOrder",query:{type:'other'} });
+      let type = "taocan";
+      if (this.shopTitle == "营养咨询") {
+        type = "yyzx";
+      }
+      this.$store.goods.state.shopInfo.length>0&&this.$store.goods.state.shopInfo.map(item => {
+        if (item.catagoryid == "40") {
+          type = "tysp";
+        }
+        if (item.catagoryid == "41") {
+          type = "yyzx";
+        }
+      });
+      let temp = false
+      if(this.$store.goods.state.shopInfo.length>0){
+        let categoryid = this.$store.goods.state.shopInfo[0].catagoryid
+        
+        this.$store.goods.state.shopInfo.map(item => {
+          if (item.catagoryid != categoryid) {
+           MessageBox("提示", "不同分类商品请分别下单")
+           temp = true
+           return
+          }
+        });
+      }
+      
+      console.log(this.$store.goods.state.shopInfo,'this.$store.goods.state.shopInfo')
+      this.$store.goods.state.shopInfo.length>0&&!temp&&this.$router.push({ path: "/bjyyq/createOrder", query: { type: type } });
     },
     xuanzeDate() {},
     //跳转详情页
@@ -225,13 +383,18 @@ export default {
     },
     //点击分类获取商品
     clickCategory(categoryId, cname) {
+      this.healthInfo = []
+      this.healthPrice = 0
+      categoryId==41&&this.gethealthInfo()
       let store = this.$store.goods;
       store
         .dispatch("getCategoryFood", {
           categoryId
         })
         .then(() => {
-          store.dispatch("getCartInfo", { userId: sessionStorage.userId || sessionStorage.userid });
+          store.dispatch("getCartInfo", {
+            userId: sessionStorage.userId || sessionStorage.userid
+          });
         });
       this.shopTitle = cname;
     },
@@ -245,11 +408,15 @@ export default {
           userId: sessionStorage.userId || sessionStorage.userid
         })
         .then(() => {
-          store.dispatch("getCartInfo", { userId: sessionStorage.userId || sessionStorage.userid }).then(() => {
-            if (this.$store.goods.state.shopInfo.length <= 0) {
-              this.isShow = false;
-            }
-          });
+          store
+            .dispatch("getCartInfo", {
+              userId: sessionStorage.userId || sessionStorage.userid
+            })
+            .then(() => {
+              if (this.$store.goods.state.shopInfo.length <= 0) {
+                this.isShow = false;
+              }
+            });
         });
     },
     //控制购物车商品的弹出和隐藏

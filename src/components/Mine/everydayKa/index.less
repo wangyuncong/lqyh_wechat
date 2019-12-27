@@ -1,31 +1,95 @@
 .everydayKa{
-    .zhibiao{    
-        font-size: 0.4rem;
-        font-family: PingFang SC;
-        font-weight: 600;
-        color: #333333;
-        margin-top: 9px;
-        border-left: 3px solid rgba(65,179,150,1);
-        padding-left: 3px;
-        margin-left: 13px;
+    padding-bottom: 60px;
+    .title{
+        position: absolute;
+        top: 0;
+        width: 95%;
+        margin-left: 2.5%;
+        font-size: 0.48rem;
+        margin-top: 0.266667rem;
+        text-align: center;
+        overflow: hidden;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    } 
+    
+    .weibu{
+        background: #41b396;
+        color: white;
+        height: 33px;
+        line-height: 33px;
+        text-align: left;
+        text-indent: 14px;
+        margin-bottom: 10px;
+        font-weight: 800;
     }
-    .shijain{
-        width: 100%;
-        height:45px;
-        background:rgba(255,255,255,1);
-        line-height: 45px;
-        text-indent: 10px;
-        font-size: 13px;
+    .qushitu{
+        width:70px;
+        height:24px;
+        background:#41b396;
+        border-radius:12px;
+        font-size:13px;
+        font-family:PingFang SC;
+        font-weight:400;
+        color:rgba(255,255,255,1);
+        border: 0;
+        line-height: 24px;
+        margin-right: 18px;
+        margin-top: 7px;
+        float: right;
+        margin-bottom: 4px;
+    }
+    .jingshi{
         img{
-            float: right;
+         width: 13px;
+         margin-right: 5px;
+         position: relative;
+         top: 2px;
+         margin-top: 7px;
+        }
+        color: #B30000;
+    }
+    .chakanxiangqing{
+        text-align: center;
+        color: #41b396;
+        position: relative;
+        top: -8px;
+    }
+    .button{
+        width: 100%;
+        height:49px;
+        background:#41b396;
+        color: white;
+        position: fixed;
+        bottom: 0;
+        border: 0;
+    }
+    .showdiv-add{
+        text-align: left;
+        margin-left: 17px;
+        img{
+            width: 21px;
             position: relative;
-            top: 17px;
-            right: 13px;
+            top: 4px;
+            margin-right: 2px;
         }
-        span:nth-of-type(1){
-            color: #000;
-            margin-left: 20px;
-        }
+        color: rgba(243, 175, 188, 1);
+    }
+    .gunbifew{
+        position: absolute;
+        right: 10px;
+        top: 6px;
+        width: 18px;
+        z-index: 10;
+    }
+    .nutritiontips{
+        line-height: 20px;
+        display: block;
+        width: 94%;
+        margin: 0 auto;
+        text-indent: 0;
+        line-height: 22px;
     }
     .show{
         background: rgba(0, 0,0, 0.5);
@@ -41,90 +105,155 @@
         justify-content: center;
         .showdiv{
             background: white;
+            width: 70%;
+            .imgse{
+                width:120px;
+                display: block;
+                margin: 0 auto;
+                margin-top: 10px;
+                height:80px;
+                margin-bottom: 8px;
+                img{
+                    width: 100%;
+                    height: 100%;
+                }
+                background:rgba(242,242,242,1);
+            }
+            .fwaefw{
+                color: #999 !important;
+                img{
+                    margin-top: 15px;;
+                }
+                line-height: 18px;
+            }
+            span{
+                width: 75px;
+                text-align: center;
+                display: inline-block;
+            }
+            .showdiv-title{
+                height:40px;
+                font-size:15px;
+                text-align: left;;
+                text-indent: 10px;
+                color: #fff;
+                line-height: 40px;
+                background:#41b396;
+            }
         }
         .queding{
             margin-top: 13px;
             height: 31px;
             line-height: 31px;
             margin-bottom: 18px;
+            background: #41b396;
+            border-radius: 19px;
+            border: 0;
         }
         >div{
             width: 80%;
         }
     }
-    .button{
+    .br{
         width: 100%;
-        height:49px;
-        background:rgba(65,180,151,1);
-        color: white;
-        position: fixed;
-        bottom: 0;
-        border: 0;
+        height: 5px;
+        border-top: 1px solid #ded6d6;
+        margin-top: 7px;
     }
-    .dife{
-        margin-top: 10px;
-        display: flex;
-        justify-content: left;
-        flex-wrap: wrap;
-        padding-left: 8px;
-        div{
-            position: relative;
-            width: 32%;
-            margin-right: 4px;
-            height: 53px;
-            margin-top: 5px;
-            overflow: hidden;
-            div{
-                position: absolute;
-                top: 9px;
-                text-indent: 10px;
-                width: 100%;
-                P:nth-of-type(1){
-                    font-weight: 800;
-                }
-                color: white;
-            }
-            img:nth-of-type(1){
-                width: 100%;
-            }
-            .dife-img{
-                position: absolute;
-                width: 32%;
-                top: 0px;
-                right: -1px;
-                z-index: 100;
-                height: 102%;
-                margin-top: 0;
-                margin-right: 0;
-                text-align: center;
-                text-indent: 0;
-                img:nth-of-type(1){
-                    margin-top: 11px;
-                    width: 25px;
-                }
-            }
+    .butList{
+        padding-bottom: 11px;
+        button{    
+            background: #41b396;
+            border: 0;
+            color: white;
+            width: 70px;
+            height: 29px;
+            line-height: 29px;
+            border-radius: 27px;
+        }
+        button:nth-of-type(1){
+            margin-right: 15px;
         }
     }
-    .everydayKa-nav{
-        display: flex;
-        justify-content: space-between;
-        color: #999999;
-        width: 93%;
-        margin: 0 auto;
-        margin-top: 8px;
-        .span img:nth-of-type(1){
-            width: 15px;
-            height: 15px;
-            margin-right: 6px;
+    .dangtian{
+        background: #41b396 !important;
+        color: white !important;
+    }
+    .flag{
+        color:rgba(221,221,221,1);
+    }
+    .red{
+        color: #da363b !important;
+    }
+    .img-title{
+        margin-top: 10px;
+        color: #999;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 11px;
+        img{
             position: relative;
             top: 2px;
+            margin-right: 2px;
+            margin-left: 10px;
+            // width:10px;
         }
-        .span{
-            font-size:13px;
-            font-family:PingFang SC;
-            font-weight:500;
-            color:rgba(51,51,51,1);
-            line-height:2px;
+    }
+    .selectIndex{
+        border: 1px solid rgba(65,180,151,1) !important;
+    }
+    .liSelect{
+        height: 40px;
+        border-bottom: 1px solid #41b396;
+        border-top: 1px solid #41b396;
+        line-height: 40px;
+        font-size: 15px;
+        width: 96%;
+        margin: 0 auto;
+        span{
+            float: right;
+        }
+    }
+    .li{
+        height: 40px;
+        border-bottom: 1px solid #eee;
+        line-height: 40px;
+        font-size: 15px;
+        width: 96%;
+        color: #333;
+        margin: 0 auto;
+        span{
+            float: right;
+        }
+    }
+    .calendar-date{
+        overflow: hidden;
+        border-top: 6px solid #eee;
+        font-size: 15px;
+        text-indent: 7px;
+        >div{
+            height:42px;
+            padding-top: 5px;
+            background:rgba(255,255,255,1);
+            border:1px solid rgba(237,237,237,1);
+            border-radius:5px;
+            width: 13.7%;
+            float: left;
+            >div{
+                img{
+                    width: 10px;
+                    position: relative;
+                    top: 2px;
+                }
+            }
+        }
+    }
+    .calendar{
+        display: flex;
+        text-align: center;
+        margin-top: 50px;
+        font-size: 13px;
+        span{
+            flex: 1;
         }
     }
 }

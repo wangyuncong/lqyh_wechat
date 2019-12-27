@@ -25,11 +25,13 @@ body{
     margin-top: 5px;
     display: flex;
     overflow: hidden;
+    min-height: 78vh;
     >div{
         display: inline-block;
     }
     .left{
         width: 70px;
+        background: #F3F3F3; 
         >p{
             width: 70px;
             height: 45px;
@@ -39,10 +41,10 @@ body{
             color: #666666;
         }
         >p:active{
-            background: #F3F3F3; 
+            background: #fff; 
         }
         .active{
-            background: #F3F3F3;
+            background: #fff;
         }
     }
     .right{
@@ -60,7 +62,7 @@ body{
                 height:5px;
                 display:inline-block;
                 border-radius: 100%;
-                background: #41B396;
+                background: #41b396;
             }
             span:nth-child(2){
                 opacity: 0.6;
@@ -85,7 +87,7 @@ body{
             // right:85px;
         }
         h5{
-            color: #41B396;
+            color: #41b396;
             text-align: center;
             line-height: 40px;
             font-size: 14px;
@@ -95,8 +97,10 @@ body{
             display: flex;
             padding: 10px;
             // box-shadow: 1px 1px 5px #cccccc;
-            box-shadow:2px 2px 3px #cccccc;
+            // box-shadow:2px 2px 3px #cccccc;
+            border:1px solid #ccc;
             margin-top:10px;
+            border-radius: 5px;
             img{
                 width: 85px;
                 height:85px;
@@ -109,7 +113,7 @@ body{
                     font-weight: bold;
                 }
                 .keyword{
-                    padding: 10px 0;
+                    padding: 3px 0;
                     >span{
                         padding: 3px 6px;
                         background: #f2f2f2;
@@ -136,7 +140,7 @@ body{
 .footer{
     width: 100%;
     height: 50px;
-    background: #41B396;
+    background: #41b396;
     position: fixed;
     bottom: 0px;
     .count_price{
@@ -238,7 +242,7 @@ body{
         display: inline-block;
         width: 20px;
         height: 20px;
-        background: #41B396;
+        background: #41b396;
         font-size: 16px;
         color: #fff;
         border-radius: 100%;
@@ -248,7 +252,7 @@ body{
     }
     span:nth-child(2){
         font-size: 14px;
-        padding: 10px;
+        padding: 5px;
     }
     .none{
         display: none!important;
@@ -260,4 +264,7 @@ body{
 .riqi{
     position: relative;
     left:10px;
+    button{
+        background:#41b396
+    }
 }

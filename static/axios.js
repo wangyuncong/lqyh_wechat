@@ -1,3 +1,11 @@
+/*
+ * @Descripttion: 
+ * @version: 
+ * @Author: Zhang Zi Fang
+ * @Date: 2019-09-10 17:49:50
+ * @LastEditors: Zhang Zi Fang
+ * @LastEditTime: 2019-10-22 10:35:07
+ */
 import axios from "axios";
 // import { Message } from 'element-ui';
 // const host ='/apitarget'
@@ -28,13 +36,9 @@ function $http({ url, data, method, success, error }) {
     var params = method.toUpperCase() == 'GET' ? data : {}
     sessionStorage.img = img
     sessionStorage.host = host
-    // 统一参数
-    // data.ip = ""
-    // data.timestamp = ''
-    // data.useragent = ''
-    // data.auth = ''
-    data.userid = sessionStorage.userId || sessionStorage.userid
-    
+    if (!data.userid) {
+        data.userid = sessionStorage.userId || sessionStorage.userid
+    }
     // data.structid = sessionStorage.structid
     // console.log(method)
     // console.log(host + url)
@@ -58,9 +62,9 @@ function $http({ url, data, method, success, error }) {
                 // console.log(`服务器异常！错误代码(${url})`)
             }
             resolve(response.data)
-          if(success){
-            success(response.data)
-          }
+            if (success) {
+                success(response.data)
+            }
             // 成功回调函数
 
         }).catch((error) => {

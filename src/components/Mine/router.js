@@ -1,3 +1,11 @@
+/*
+ * @Descripttion: 
+ * @version: 
+ * @Author: Zhang Zi Fang
+ * @Date: 2019-10-12 16:44:48
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2019-11-08 17:51:20
+ */
 const mineRouter = [
     {
         path: '/discounts',
@@ -16,11 +24,53 @@ const mineRouter = [
         }
     },
     {
+        path: '/ihuanzhesecond',
+        name: 'ihuanzhesecond',
+        component: resolve => require(['./ihuanzhe/ihuanzhesecond'], resolve),
+        meta: {
+            title: '患者列表'
+        }
+    },
+    {
+        path: '/seniority',
+        name: 'seniority',
+        component: resolve => require(['./seniority'], resolve),
+        meta: {
+            title: '我的资历'
+        }
+    },
+    
+
+    {
         path: '/orderFormMsg',
         name: 'orderFormMsg',
         component: resolve => require(['./orderFormMsg'], resolve),
         meta: {
             title: '订单信息'
+        }
+    },
+    {
+        path: '/ihuanzhe',
+        name: 'ihuanzhe',
+        component: resolve => require(['./ihuanzhe'], resolve),
+        meta: {
+            title: '我的患者'
+        }
+    },
+    {
+        path: '/all',
+        name: 'all',
+        component: resolve => require(['./everydayKa/all'], resolve),
+        meta: {
+            title: '所有记录'
+        }
+    },
+    {
+        path: '/svg',
+        name: 'svg',
+        component: resolve => require(['./everydayKa/svg'], resolve),
+        meta: {
+            title: '体重详情'
         }
     },
     {
@@ -101,6 +151,22 @@ const mineRouter = [
         component: resolve => require(['./performance'], resolve),
         meta: {
             title: '我的业绩'
+        }
+    },
+    {
+        path: '/callCenter',
+        name: 'callCenter',
+        component: resolve => require(['./callCenter'], resolve),
+        meta: {
+            title: '客服中心'
+        }
+    },
+    {
+        path: '/callCenterChat',
+        name: 'callCenterChat',
+        component: resolve => require(['./callCenter/chat'], resolve),
+        meta: {
+            title: '客服中心'
         }
     },
     {

@@ -1,16 +1,22 @@
 <template>
   <div class="editAddress">
     <div v-wechat-title="$route.meta.title"></div>
-    <div class="header">
+    <!-- <div class="header">
       <mt-header title="新增收货地址">
         <router-link to slot="left">
           <mt-button icon="back" @click.native="$router.back(-1)"></mt-button>
         </router-link>
       </mt-header>
-    </div>
+    </div>-->
     <div class="shuru">
       <mt-field label="收货人" placeholder="请输入收货人姓名" v-model="custname"></mt-field>
-      <mt-field label="联系电话" placeholder="请输入手机号" v-model="phonenum"></mt-field>
+      <mt-field
+        :attr="{ oninput: 'if(value.length>11)value=value.slice(0,11)' }"
+        label="联系电话"
+        type="number"
+        placeholder="请输入手机号"
+        v-model="phonenum"
+      ></mt-field>
       <div @click="setPopupVisible">
         <mt-cell class="area" title="收货地址" is-link>
           <span style="color:#333333">{{myAddressProvince}}{{myAddressCity}}{{myAddresscounty}}</span>
@@ -31,6 +37,7 @@
 import { Field, Picker, Popup, MessageBox, Toast } from "mint-ui";
 import myaddress from "./area.json";
 import { setTimeout } from "timers";
+import { Field as iField } from "vant";
 export default {
   name: "editAddress",
   data() {
@@ -101,6 +108,13 @@ export default {
         }, 0);
       }
     });
+  },
+  watch: {
+    phonenum(res) {
+      if (res.length > 11) {
+        this.phonenum = this.phonenum.slice(0, 11);
+      }
+    }
   },
   methods: {
     saveAddress() {
@@ -216,6 +230,7 @@ export default {
       text-align: center;
       padding: 15px 0px;
       button {
+        background: #41b396;
         margin-left: 50px;
         &:nth-child(1) {
           margin-left: 0px;
@@ -224,7 +239,7 @@ export default {
     }
   }
   .footer {
-    background: #41b497;
+    background: #41b396;
     height: 50px;
     line-height: 50px;
     text-align: center;

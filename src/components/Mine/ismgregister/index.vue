@@ -1,3 +1,11 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: Zhang Zi Fang
+ * @Date: 2019-09-10 17:49:49
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2019-11-04 17:13:26
+ -->
 <template>
   <div class="register">
     <div class="register-title">
@@ -74,13 +82,16 @@ export default {
       });
     },
     baocun() {
-      if (this.fileList.length === 0) {
-        MessageBox.alert("请选择图片！");
-        return;
-      }
-      var { name, sex, stature, weight, BMI, age, phone,gestation } = JSON.parse(
-        sessionStorage.linshi
-      );
+      var {
+        name,
+        sex,
+        stature,
+        weight,
+        BMI,
+        age,
+        phone,
+        gestation
+      } = JSON.parse(sessionStorage.linshi);
       this.$http({
         url: "/bjyyq/api/infoAdd",
         data: {
@@ -96,6 +107,12 @@ export default {
         },
         success: res => {
           MessageBox.alert("已保存成功！");
+          if (this.$route.query.go) {
+            this.$router.push({
+              path: "/svg"
+            });
+            return;
+          }
           this.$router.push({
             path: "/bjyyq/mine"
           });

@@ -1,33 +1,60 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: Zhang Zi Fang
+ * @Date: 2019-09-10 17:49:49
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2019-11-19 15:26:39
+ -->
 <template>
   <div class="myAdvice">
     <template v-for="(item,index) in list">
       <div v-if="item.replierid" :key="index">
         <div class="myAdvice-left">
-          <img :src="item.msg.img || img" @errοr="img" alt />
-          <span>{{item.value}}</span>
+          <img :src="img" @errοr="img" alt />
+          <span :id="`id${index}`" class="imgbox">
+            <span></span>
+          </span>
         </div>
-        <p style="transform: scale(0.8);text-indent: 28px;color: #999;margin-top: 4px;">{{item.createtime}}</p>
+        <p
+          style="transform: scale(0.8);text-indent: 28px;color: #999;margin-top: 4px;"
+        >{{item.createtime}}</p>
       </div>
       <div v-if="!item.replierid" :key="index">
         <div class="myAdvice-right">
-          <span>{{item.value}}</span>
+          <span :id="`id${index}`" @click="imgClick" class="imgbox">
+            <span></span>
+          </span>
           <img :src="item.msg.img || img" alt />
         </div>
-        <p style="transform: scale(0.8);float: right;margin-right: 49px;color: #999;margin-top: 2px;">{{item.createtime}}</p>
+        <p
+          style="transform: scale(0.8);float: right;margin-right: 49px;color: #999;margin-top: 2px;"
+        >{{item.createtime}}</p>
       </div>
     </template>
     <div class="myAdvice-bottom">
+      <div style="display:inline-block">
+        <van-uploader :after-read="afterRead" />
+      </div>
       <input type="text" v-model="value" />
       <button @click="send">发送</button>
     </div>
   </div>
 </template>
 <script>
+import { Toast, Indicator } from "mint-ui";
+import { Uploader, ImagePreview, Lazyload } from "vant";
+import Vue from "vue";
 var ip =
   process.env.NODE_ENV === "production"
     ? `${location.hostname}:8001`
     : "localhost:8001";
 var ws;
+Vue.use(Lazyload, {
+  preLoad: 1.3,
+  loading: "http://bjyyq.zhaoshuikan.com.cn/static/images/timg.gif?1",
+  attempt: 1
+});
 export default {
   name: "myAdvice",
   data() {
@@ -38,23 +65,57 @@ export default {
       list: [],
       sender: "",
       img: "static/images/bdc3ca4109f57e78846eb74ab664015.png"
+      // fileList:[]
     };
   },
   watch: {
-    list() {
+    list(res) {
       this.$nextTick(() => {
+        // window.scrollBy(0, 50000);
+        res.forEach((v, i) => {
+          var img = document.querySelector(`#id${i} span`);
+          if (v.value.match(/src\=(.+?)\/\>/)) {
+            v.value = v.value.replace(
+              "<img",
+              `<img :loading="'http://bjyyq.zhaoshuikan.com.cn/static/images/timg.gif'" v-lazy="'${
+                v.value.match(/src\=(.+?)\/\>/)[1]
+              }'"`
+            );
+          }
+          var se = Vue.extend({
+            template: `<div class="divsafew">${v.value}</div>`
+          });
+          new se({ el: img });
+        });
         setTimeout(() => {
           window.scrollBy(0, 50000);
-        }, 10);
+        }, 100);
       });
     }
   },
+  components: {
+    ["van-uploader"]: Uploader
+  },
   computed: {},
   destroyed() {
-    ws.close();
+    // 清空自己的已读作用
+    var data = {
+      userid: this.userid,
+      value: this.value,
+      sender: this.sender,
+      msg: {
+        id: this.userid
+      },
+      type: "QKYD"
+    };
+    ws.close(1000, JSON.stringify(data));
   },
   mounted() {
     // 获取自己的id
+    if (this.$route.query.userid) {
+      sessionStorage.userid = this.$route.query.userid;
+    }
+
     ws = new WebSocket(`ws://${ip}/`);
     var _this = this;
     new Promise((v, s) => {
@@ -72,7 +133,8 @@ export default {
       if (!sessionStorage.userid) {
         return;
       }
-      this.userid = sessionStorage.userid;
+      _this.userid = sessionStorage.userid;
+
       ws.onopen = function() {
         ws.send(
           JSON.stringify({
@@ -95,41 +157,249 @@ export default {
                 userid: element.userid,
                 value: element.content,
                 msg: element.msg,
-                createtime:element.createtime,
+                createtime: element.createtime,
                 replierid: element.replierid
               });
             });
             // 添加
           } else if (data.type === "ADD") {
             _this.list.push(data);
+            console.log(data);
             if (data.replierid) {
-              _this.sender = element.replierid;
+              _this.sender = data.replierid;
             }
           } else if (data.type === "success") {
             _this.list.push(data);
+          } else if (data.type === "transmit") {
+            if (data.msg.replierid) {
+              _this.sender = data.msg.replierid;
+            }
           }
         }
       };
     });
   },
   methods: {
-    send() {
-      var data = {
-        userid: this.userid,
-        value: this.value,
-        sender: this.sender,
-        msg: {
-          id: this.userid
+    imgClick(res) {
+      // 图片的话显示
+      if (res.target && res.target.src) {
+        // 所有图片
+        var list = [res.target.src];
+        // var imgbox = document.querySelectorAll(".imgbox img");
+        var index = 0;
+        // imgbox.forEach((e, ind) => {
+        //   list.push(e.src);
+        //   if (e.src === res.target.src) {
+        //     index = ind;
+        //   }
+        // });
+        ImagePreview({
+          images: list,
+          startPosition: index
+        });
+      }
+    },
+    afterRead(res) {
+      if (res.length == undefined) {
+        this.imgAdd(res, res.file.name);
+      } else {
+        res.forEach((element, index) => {
+          this.imgAdd(element, element.file.name, index);
+        });
+      }
+    },
+    imgAdd(res, name, index) {
+      // Indicator.open({
+      //   text: "上传中...",
+      //   spinnerType: "fading-circle"
+      // });
+      Indicator.open({
+        text: "上传中...",
+        spinnerType: "fading-circle"
+      });
+      this.$http({
+        url: "/bjyyq/api/imgAdd",
+        data: {
+          base_64: res.content,
+          name: name.split(",")
         },
-        type: "ADD"
-      };
-      ws.send(JSON.stringify(data));
-      this.value = "";
+        success: res => {
+          // console.log(res,'res///')
+          // this.value = `<img src='${sessionStorage.img}${res.url}'/>`
+          this.value = `<img src=http://bjyyq.zhaoshuikan.com.cn/static/${res.url} />`;
+          var data = {
+            userid: this.userid,
+            value: this.value,
+            sender: this.sender,
+            msg: {
+              id: this.userid
+            },
+            type: "ADD",
+            valueType: "image"
+          };
+          console.log(data, ws, "data");
+          ws.send(JSON.stringify(data));
+          this.value = "";
+          // if (index) {
+          //   // this.img[index] = res.url;
+          // } else {
+          //   // this.img.push(res.url);
+          // }
+          Indicator.close();
+        }
+      });
+    },
+    //判断用户是不是输入的表情
+    isEmojiCharacter(substring) {
+      for (var i = 0; i < substring.length; i++) {
+        var hs = substring.charCodeAt(i);
+        if (0xd800 <= hs && hs <= 0xdbff) {
+          if (substring.length > 1) {
+            var ls = substring.charCodeAt(i + 1);
+            var uc = (hs - 0xd800) * 0x400 + (ls - 0xdc00) + 0x10000;
+            if (0x1d000 <= uc && uc <= 0x1f77f) {
+              return true;
+            }
+          }
+        } else if (substring.length > 1) {
+          var ls = substring.charCodeAt(i + 1);
+          if (ls == 0x20e3) {
+            return true;
+          }
+        } else {
+          if (0x2100 <= hs && hs <= 0x27ff) {
+            return true;
+          } else if (0x2b05 <= hs && hs <= 0x2b07) {
+            return true;
+          } else if (0x2934 <= hs && hs <= 0x2935) {
+            return true;
+          } else if (0x3297 <= hs && hs <= 0x3299) {
+            return true;
+          } else if (
+            hs == 0xa9 ||
+            hs == 0xae ||
+            hs == 0x303d ||
+            hs == 0x3030 ||
+            hs == 0x2b55 ||
+            hs == 0x2b1c ||
+            hs == 0x2b1b ||
+            hs == 0x2b50
+          ) {
+            return true;
+          }
+        }
+      }
+    },
+    //编码表情
+    utf16toEntities(str) {
+      var patt = /[\ud800-\udbff][\udc00-\udfff]/g;
+      // 检测utf16字符正则
+      str = str.replace(patt, function(char) {
+        var H, L, code;
+        if (char.length === 2) {
+          H = char.charCodeAt(0);
+          // 取出高位
+          L = char.charCodeAt(1);
+          // 取出低位
+          code = (H - 0xd800) * 0x400 + 0x10000 + L - 0xdc00;
+          // 转换算法
+          return "&#" + code + ";";
+        } else {
+          return char;
+        }
+      });
+      return str;
+    },
+    send() {
+      console.log(this.value, "this.valueadsada");
+      var reg = /\S/;
+      console.log(this.value.length, "this.value");
+      // if(this.value.length===0){
+      //   console.log(this.value,'this.value')
+      //   // Toast({
+      //   //   message: "输入不能为空",
+
+      //   // });
+      //   this.value = "";
+      // }else{
+      //   this.value = this.value.replace(new RegExp(/( )/g), '&nbsp;')
+      //   var data = {
+      //     userid: this.userid,
+      //     value: this.value,
+      //     sender: this.sender,
+      //     msg: {
+      //       id: this.userid
+      //     },
+      //     type: "ADD"
+      //   };
+      //   ws.send(JSON.stringify(data));
+      //   this.value = "";
+      // }
+      if (!reg.test(this.value)) {
+        Toast({
+          message: "不能只输入空格"
+        });
+        this.value = "";
+      } else {
+        if (this.isEmojiCharacter(this.value)) {
+          this.value = this.utf16toEntities(this.value);
+          var data = {
+            userid: this.userid,
+            value: this.value,
+            sender: this.sender,
+            msg: {
+              id: this.userid
+            },
+            type: "ADD"
+          };
+          ws.send(JSON.stringify(data));
+          this.value = "";
+        } else {
+          this.value = this.value.replace(new RegExp(/( )/g), "&nbsp;");
+          var data = {
+            userid: this.userid,
+            value: this.value,
+            sender: this.sender,
+            msg: {
+              id: this.userid
+            },
+            type: "ADD"
+          };
+          ws.send(JSON.stringify(data));
+          this.value = "";
+        }
+      }
     }
   }
 };
 </script>
 <style lang='less' src='./index.less' scoped>
+</style>
+<style lang="less">
+.myAdvice {
+  .van-uploader__upload {
+    width: 30px;
+    height: 25px !important;
+    border: none;
+    background-repeat: no-repeat;
+    position: relative;
+    top: 8px;
+    left: 5px;
+    padding: 0px;
+    margin: 0px;
+    background-image: url(../../../static/images/sendimage.png?1);
+    .van-uploader__upload-icon {
+      display: none;
+    }
+    // background: red;
+  }
+  .imgbox {
+    img {
+      display: inline-block;
+      width: 200px;
+    }
+  }
+}
 </style>
 
 

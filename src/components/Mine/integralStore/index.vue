@@ -1,3 +1,11 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: 
+ * @Date: 2019-09-10 17:49:49
+ * @LastEditors: 
+ * @LastEditTime: 2019-11-19 15:38:20
+ -->
 <template>
   <div class="integralStore">
     <div class="integralStore-title">
@@ -18,7 +26,7 @@
           <p style="text-align: center;font-size: 14px;color: #999;">暂无商品</p>
         </li>
         <li class="integralStore-maim" v-for="item in list">
-          <img src="/static/images/infoYouhu.png" alt />
+          <img src="/static/images/infoYouhu.png?4" alt />
           <div class="integralStore-div-main">
             <p>
               ¥

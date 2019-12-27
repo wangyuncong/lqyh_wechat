@@ -1,8 +1,16 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: 
+ * @Date: 2019-09-10 17:49:49
+ * @LastEditors: 
+ * @LastEditTime: 2019-12-02 16:16:30
+ -->
 <template>
   <div class="dietHobby">
     <p class="dietHobby-title">对自己的偏好食物做出选择</p>
     <p class="imgDuoxu">
-      <img src="/static/images/xignmig.png" alt />喜欢（多选）
+      <img src="/static/images/nanguo.png" alt />不喜欢（多选）
     </p>
     <div class="dietHobby-main">
       <span
@@ -14,22 +22,22 @@
     </div>
     <p class="dietHobby-main-title">
       其他
-      <input type="text" v-model="likeElse" placeholder="请输入您喜欢的食物" />
+      <input type="text" v-model="likeElse" placeholder="请输入您不喜欢的食物" />
     </p>
     <p class="imgDuoxu" style="margin-top:30px;">
-      <img src="/static/images/nanguo.png" alt />不喜欢（多选）
+      <img src="/static/images/984acc90fd15243c151e055eb81c47f.png" alt />会过敏（多选）
     </p>
     <div class="dietHobby-main">
       <span
         v-for="(item,index) in dislike"
         @click="xihuanCLIk(item)"
         :key="index"
-        :class="clssSelect(item)"
+        :class="clssSelect1(item)"
       >{{item.paramvalue}}</span>
     </div>
     <p class="dietHobby-main-title">
       其他
-      <input type="text" v-model="dislikeElse" placeholder="请输入您不喜欢的食物" />
+      <input type="text" v-model="dislikeElse" placeholder="请输入食用后有过敏反应的食物" />
     </p>
     <button class="dietHobby-go" @click="dietHobbyAdd">保存</button>
   </div>
@@ -54,20 +62,20 @@ export default {
       if (item !== "kon") {
         item.select = !item.select;
       }
-      this.list.forEach(s => {
-        this.dislike.forEach(v => {
-          if (v.paramvalue === s.paramvalue) {
-            v.jinyon = s.select;
-          }
-        });
-      });
-      this.dislike.forEach(s => {
-        this.list.forEach(v => {
-          if (v.paramvalue === s.paramvalue) {
-            v.jinyon = s.select;
-          }
-        });
-      });
+      // this.list.forEach(s => {
+      //   this.dislike.forEach(v => {
+      //     if (v.paramvalue === s.paramvalue) {
+      //       v.jinyon = s.select;
+      //     }
+      //   });
+      // });
+      // this.dislike.forEach(s => {
+      //   this.list.forEach(v => {
+      //     if (v.paramvalue === s.paramvalue) {
+      //       v.jinyon = s.select;
+      //     }
+      //   });
+      // });
       this.dislike = JSON.parse(JSON.stringify(this.dislike));
     },
     clssSelect(item) {
@@ -76,6 +84,14 @@ export default {
       }
       if (item.select) {
         return "spanSelect";
+      }
+    },
+    clssSelect1(item) {
+      if (item.jinyon) {
+        return "jinyon";
+      }
+      if (item.select) {
+        return "spanSelect1";
       }
     },
     dietHobbyAdd() {

@@ -1,13 +1,21 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: Zhang Zi Fang
+ * @Date: 2019-09-24 15:32:34
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2019-11-19 13:57:24
+ -->
 <template>
   <div class="addressList">
     <div v-wechat-title="$route.meta.title"></div>
-    <div class="header">
+    <!-- <div class="header">
       <mt-header title="收货地址">
         <router-link to slot="left">
           <mt-button icon="back" @click.native="Isrouter"></mt-button>
         </router-link>
       </mt-header>
-    </div>
+    </div>-->
     <div class="ZANWSHOU" v-if="list.length == 0">
       <img src="static/images/zanwushou.png" alt />
       <p>暂无收货地址</p>
@@ -15,32 +23,39 @@
     <div class="content">
       <div class="item" v-for="(item,index) in list" @click="listIndexClick(index)" :key="index">
         <div class="one">
-          <p>{{item.custname}}</p>
+          <p style="color:#333333;font-size:15px;font-weight:600;">{{item.custname}}</p>
           <p>{{item.phonenum}}</p>
         </div>
-        <div class="two">{{item.addrinfo}}</div>
+        <div class="two">
+          <img src="../../../static/images/address.png?1" style="width:13px;height:17px;marginRight:7px;"/>
+          <span style="color:#666666;vertical-align: top;position:relative;">{{item.addrinfo}}</span>
+        </div>
         <div>
           <div class="edit">
-            <mt-radio
+            <!-- <mt-radio
               v-model="value"
               @change="defaultChange(item)"
               :options="[{
                 label: '设为默认',
                 value: item.id
               }]"
-            ></mt-radio>
+            ></mt-radio> -->
+            <div @click="defaultChange(item)">
+              <p :class="item.id==value?'xuanzhong':'noxuanzhong'"><span v-if="item.id==value" class="check-style-unequal-width"></span></p>
+              <span style="fontSize:12px;color:#999;marginLeft:7px;">{{item.id==value?'默认地址':'设为默认'}}</span>
+            </div>
             <div class="editButton">
               <p @click.stop="editAddr(item)">
                 <span>
                   <img src="../../../static/images/addredit.png" />
                 </span>
-                <span>编辑</span>
+                <span style="fontSize:12px;color:#999">编辑</span>
               </p>
               <p @click.stop="deleteAddr(item)">
                 <span>
                   <img src="../../../static/images/addrdel.png" />
                 </span>
-                <span>删除</span>
+                <span style="fontSize:12px;color:#999">删除</span>
               </p>
             </div>
           </div>
@@ -57,17 +72,36 @@ export default {
   data() {
     return {
       list: [],
-      value: ""
+      value: "",
+      name: "" //判断类型用
     };
   },
   created() {
     this.getList();
+    this.name = this.$route.query.name;
   },
   components: {
     Radio
   },
   methods: {
     listIndexClick(index) {
+      // 订单更改用户地址
+      if (this.name === "gengxin") {
+        MessageBox.confirm("确认需要更改此地址？").then(action => {
+          this.$http({
+            url: "/bjyyq/api/updatesite",
+            data: {
+              id: this.$route.query.orderid,
+              addId: this.list[index].id
+            },
+            success: res => {
+              this.$router.back(-1);
+            }
+          });
+        });
+        return;
+      }
+
       if (this.$route.query.info) {
         return;
       }
@@ -194,6 +228,9 @@ export default {
 </style>
 <style lang="less" scoped>
 .addressList {
+  background: #eeeeee;
+  border-top: 1px solid #eeeeee;
+  height: 100vh;
   .mint-header {
     background: #fff;
     color: #ccc;
@@ -217,13 +254,46 @@ export default {
   }
   .two {
     color: #666666;
-    padding-bottom: 15px;
+    padding-bottom: 10px;
+    vertical-align: top;
   }
   .edit {
     display: flex;
     justify-content: space-between;
     vertical-align: top;
     border-top: 1px solid #eeeeee;
+    line-height: 45px;
+    .noxuanzhong{
+      width: 13px;
+      height: 13px;
+      display: inline-block;
+      border:1px solid #999999;
+      border-radius: 100%;
+      vertical-align: text-bottom;
+    }
+    .xuanzhong{
+      vertical-align: text-bottom;
+      width: 15px;
+      height: 15px;
+      display: inline-block;
+      // border:1px solid #999999;
+      border-radius: 100%;
+      background: red;
+      position: relative;
+      .check-style-unequal-width{
+        position: absolute;
+        top:1px;
+        left:5px;
+        display: inline-block;
+        width: 4px;
+        height: 8px;
+        border-color: #fff;
+        border-style: solid;
+        border-width: 0 1.5px 1.5px 0;
+        transform: rotate(45deg);
+      }
+
+    }
     .mint-radio-core {
       width: 15px;
       height: 15px;
@@ -233,19 +303,19 @@ export default {
       display: flex;
       > p {
         margin-left: 20px;
-        line-height: 56px;
+        // line-height: 56px;
       }
       img {
-        width: 15px;
-        height: 15px;
-        margin-right: 5px;
+        width: 12px;
+        height: 12px;
+        margin-right: 3px;
         position: relative;
         top: 1px;
       }
     }
   }
   .footer {
-    background: #41b497;
+    background: #41b396;
     height: 50px;
     line-height: 50px;
     text-align: center;

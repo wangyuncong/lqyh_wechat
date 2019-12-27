@@ -1,3 +1,11 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: Zhang Zi Fang
+ * @Date: 2019-10-18 10:47:26
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2019-11-19 14:51:52
+ -->
 <template>
   <div class="mine">
     <div v-wechat-title="$route.meta.title"></div>
@@ -55,67 +63,79 @@ export default {
         {
           name: "个人信息",
           url: "/imessage",
-          img: "/static/images/inimg.png?1",
+          img: "/static/images/inimg.png?2",
           show: true
         },
         {
           name: "饮食偏好",
           url: "/dietHobby",
-          img: "/static/images/gerenzho.png?1",
+          img: "/static/images/gerenzho.png",
           show: true
         },
         {
           name: "收货地址",
           url: "/bjyyq/addressList?info=true",
-          img: "/static/images/dizhi.png?1",
+          img: "/static/images/dizhi.png",
           show: true
         },
         {
           name: "订单信息",
           url: "/orderFormDetails",
-          img: "/static/images/dingdan.png?1",
+          img: "/static/images/dingdan.png",
           show: true
         },
         {
           name: "每日打卡",
           url: "/everydayKa",
-          img: "/static/images/meiri.png?1",
+          img: "/static/images/meiri.png",
           show: true
         },
         {
           name: "优惠券",
           url: "/discounts",
-          img: "/static/images/youhuijuan.png?1",
+          img: "/static/images/youhuijuan.png",
           show: true
         },
         {
           name: "积分兑换",
           url: "/integralStore",
-          img: "/static/images/jifen.png?1",
+          img: "/static/images/jifen.png",
           show: true
         },
         {
           name: "我的咨询",
           url: "/myAdvice",
-          img: "/static/images/wdzx.png?1",
+          img: "/static/images/wdzx.png",
           show: true
         },
         {
           name: "邀请好友",
           url: "/inviteFriends",
-          img: "/static/images/yaoqing.png?1",
+          img: "/static/images/yaoqing.png",
           show: true
         },
         {
-          name: "我的二维码",
-          url: "/myqrcode",
-          img: "/static/images/wdewm.png?1",
+          name: "推广记录",
+          url: "/kehuList",
+          img: "/static/images/wdewm.png",
           show: false
         },
         {
           name: "我的业绩",
           url: "/performance",
-          img: "/static/images/wdegwejo.png?1",
+          img: "/static/images/wdegwejo.png",
+          show: false
+        },
+        {
+          name: "客服中心",
+          url: "/callCenter",
+          img: "/static/images/kefuzhongxin.png",
+          show: false
+        },
+        {
+          name: "我的患者",
+          url: "/ihuanzhe",
+          img: "/static/images/huanzhe.png",
           show: false
         },
       ]
@@ -142,7 +162,7 @@ export default {
         process.env.NODE_ENV !== "production"
       ) {
         this.menuList.forEach(element => {
-          if (element.name === "我的二维码") {
+          if (element.name === "推广记录") {
             element.show = true;
           }
         });
@@ -183,6 +203,34 @@ export default {
       ) {
         this.menuList.forEach(element => {
           if (element.name === "我的业绩") {
+            element.show = true;
+          }
+        });
+      }
+      if (
+        this._Vuex.state.userInfo.roleid == 7 ||
+        this._Vuex.state.userInfo.roleid == 3 ||
+        this._Vuex.state.userInfo.roleid == 6 ||
+        this._Vuex.state.userInfo.roleid == 9 ||
+        this._Vuex.state.userInfo.roleid == 12 ||
+        process.env.NODE_ENV !== "production"
+      ) {
+        this.menuList.forEach(element => {
+          if (element.name === "客服中心") {
+            element.show = true;
+          }
+        });
+      }
+      if (
+        this._Vuex.state.userInfo.roleid == 10 ||
+        this._Vuex.state.userInfo.roleid == 8 ||
+        this._Vuex.state.userInfo.roleid == 9 ||
+        this._Vuex.state.userInfo.roleid == 7 ||
+        this._Vuex.state.userInfo.roleid == 3 ||
+        process.env.NODE_ENV !== "production"
+      ) {
+        this.menuList.forEach(element => {
+          if (element.name === "我的患者") {
             element.show = true;
           }
         });

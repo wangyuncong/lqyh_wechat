@@ -62,15 +62,44 @@ let $store = {
                     if (data.status == 'success') {
                         console.log(state.shopInfo, 'state.shopInfo')
                         let res = data.data[0]
-                        res.quantity = 0
-                        state.shopInfo.map((item, index) => {
-                            if (item.goodid == res.id) {
-                                res.quantity = item.quantity
-                                res.enddate = item.enddate
-                                res.startdate = item.startdate
-                            }
-                        })
-                        commit('getGoodsDetail', res)
+                        if(res.catagoryid==41){
+                            let healthPrice = 0
+                            Vue.prototype.$http({
+                                url: "/bjyyq/api/healthInfo",
+                                data: {},
+                                method: "get",
+                                success: data1 => {
+                                    if(data1.data.length>0){
+                                        data1.data.map((item)=>{
+                                            healthPrice+=Number(item.price)
+                                        })
+                                    // this.totalPrice+=this.healthPrice
+                                    }
+                                    res.quantity = 0
+                                    state.shopInfo.map((item, index) => {
+                                        if (item.goodid == res.id) {
+                                            res.quantity = item.quantity
+                                            res.enddate = item.enddate
+                                            res.startdate = item.startdate
+                                        }
+                                    })
+                                    res.foodprice = Number(res.foodprice)+Number(healthPrice)
+                                    commit('getGoodsDetail', res)
+                                }
+                            })
+                        }else{
+                            res.quantity = 0
+                            state.shopInfo.map((item, index) => {
+                                if (item.goodid == res.id) {
+                                    res.quantity = item.quantity
+                                    res.enddate = item.enddate
+                                    res.startdate = item.startdate
+                                }
+                            })
+                            commit('getGoodsDetail', res)
+                        }
+                        
+                        
                     }
 
                 }
@@ -106,34 +135,89 @@ let $store = {
         },
         //获取分类商品
         getCategoryFood({ commit, state }, categoryId) {
+            
             Vue.prototype.$http({
                 url: "/bjyyq/api/categoryFood", data: { categoryId }, method: 'get', success: (data) => {
                     let arr1 = []
-                    data.map((item) => {
-                        let obj = item
-                        obj.foodpicsmall = `http://bjyyq.zhaoshuikan.com.cn/static/${item.foodpicsmall}`
-                        obj.foodpicbig = `http://bjyyq.zhaoshuikan.com.cn/static/${item.foodpicbig}`
-                        obj.foodkeywordarr = item.foodkeyword.split(',')
-                        state.shopInfo.length > 0 && state.shopInfo.map((item1) => {
-                            if (item1.goodid == item.foodid) {
-                                obj.num = item1.quantity
-                            } else {
-                                obj.num = 0
+                    let healthPrice = 0
+                    console.log(categoryId,'categoryId')
+                    if(categoryId.categoryId==41){
+                        //营养咨询服务
+                        console.log('000')
+                        Vue.prototype.$http({
+                            url: "/bjyyq/api/healthInfo",
+                            data: {},
+                            method: "get",
+                            success: data1 => {
+                                if(data1.data.length>0){
+                                    data1.data.map((item)=>{
+                                        healthPrice+=Number(item.price)
+                                    })
+                                // this.totalPrice+=this.healthPrice
+                                }
+                                data.map((item) => {
+                                    let obj = item
+                                    obj.foodpicsmall = `http://bjyyq.zhaoshuikan.com.cn/static/${item.foodpicsmall}`
+                                    obj.foodpicbig = `http://bjyyq.zhaoshuikan.com.cn/static/${item.foodpicbig}`
+                                    obj.foodkeywordarr = item.foodkeyword.split(',')
+                                    state.shopInfo.length > 0 && state.shopInfo.map((item1) => {
+                                        if (item1.goodid == item.foodid) {
+                                            obj.num = item1.quantity
+                                        } else {
+                                            obj.num = 0
+                                        }
+                                    })
+                                    if(categoryId.categoryId==41){
+                                        console.log(obj.foodprice,healthPrice)
+                                        obj.foodprice = Number(obj.foodprice)+Number(healthPrice)
+                                    }
+                                    arr1.push(obj)
+                                })
+                                let arr = []
+                                state.category.map((item) => {
+                                    let obj = item
+                                    obj.active = false
+                                    if (obj.id == categoryId.categoryId) {
+                                        obj.active = true
+                                    }
+                                    arr.push(obj)
+                                })
+                                commit('setCategoryFood', arr1)
+                                commit('setCategory', arr)
                             }
+                        });
+                    }else{
+                        data.map((item) => {
+                            let obj = item
+                            obj.foodpicsmall = `http://bjyyq.zhaoshuikan.com.cn/static/${item.foodpicsmall}`
+                            obj.foodpicbig = `http://bjyyq.zhaoshuikan.com.cn/static/${item.foodpicbig}`
+                            obj.foodkeywordarr = item.foodkeyword.split(',')
+                            state.shopInfo.length > 0 && state.shopInfo.map((item1) => {
+                                if (item1.goodid == item.foodid) {
+                                    obj.num = item1.quantity
+                                } else {
+                                    obj.num = 0
+                                }
+                            })
+                            if(categoryId.categoryId==41){
+                                console.log(obj.foodprice,healthPrice)
+                                obj.foodprice = obj.foodprice+healthPrice
+                            }
+                            arr1.push(obj)
                         })
-                        arr1.push(obj)
-                    })
-                    let arr = []
-                    state.category.map((item) => {
-                        let obj = item
-                        obj.active = false
-                        if (obj.id == categoryId.categoryId) {
-                            obj.active = true
-                        }
-                        arr.push(obj)
-                    })
-                    commit('setCategoryFood', arr1)
-                    commit('setCategory', arr)
+                        let arr = []
+                        state.category.map((item) => {
+                            let obj = item
+                            obj.active = false
+                            if (obj.id == categoryId.categoryId) {
+                                obj.active = true
+                            }
+                            arr.push(obj)
+                        })
+                        commit('setCategoryFood', arr1)
+                        commit('setCategory', arr)
+                    }
+                    
                 }
             })
         },
@@ -162,34 +246,55 @@ let $store = {
         async getCartInfo({ commit, state }, obj) {
             await Vue.prototype.$http({
                 url: "/bjyyq/api/shopCart", data: obj, method: 'get', success: (data) => {
+                    console.log(state.categoryFoods,'state.categoryFoods')
                     let arr = state.categoryFoods
-                    console.log(arr, 'arr')
-                    arr.length > 0 && arr.map((item1) => {
-                        // if(item1.goodid == item.foodid){
-                        //     obj.num = item1.quantity
-                        // }else{
-                        item1.num = 0
-                        // }
-                    })
-                    data.map((item) => {
-                        // let obj = item
-                        item.foodpicsmall = `http://bjyyq.zhaoshuikan.com.cn/static/${item.foodpicsmall}`
-                        arr.map((item1) => {
-                            if (item.goodid == item1.foodid) {
-                                item1.num = item.quantity
-                                // obj
-                                // item.foodName = item1.foodname
-                                // item.foodpicsmall = `${item1.foodpicsmall}`
-                                // item.foodprice = item1.foodprice
-                            }
-                        })
-                    })
-                    commit('setShopInfo', data)
+                    // let healthPrice = 0
+                    // Vue.prototype.$http({
+                    //     url: "/bjyyq/api/healthInfo",
+                    //     data: {},
+                    //     method: "get",
+                    //     success: data1 => {
+                    //         if(data1.data.length>0){
+                    //             data1.data.map((item)=>{
+                    //                 healthPrice+=Number(item.price)
+                    //             })
+                    //         // this.totalPrice+=this.healthPrice
+                    //         }
+                            console.log(arr, 'arr')
+                            arr.length > 0 && arr.map((item1) => {
+                                // if(item1.goodid == item.foodid){
+                                //     obj.num = item1.quantity
+                                // }else{
+                                item1.num = 0
+                                // }
+                                
+                            })
+                            data.map((item) => {
+                                // let obj = item
+                                item.foodpicsmall = `http://bjyyq.zhaoshuikan.com.cn/static/${item.foodpicsmall}`
+                                arr.map((item1) => {
+                                    if (item.goodid == item1.foodid) {
+                                        item1.num = item.quantity
+                                        // obj
+                                        // item.foodName = item1.foodname
+                                        // item.foodpicsmall = `${item1.foodpicsmall}`
+                                        // item.foodprice = item1.foodprice
+                                    }
+                                })
+                                // if(item.catagoryid==41){
+                                //     item.foodprice = Number(item.foodprice)+Number(healthPrice)
+                                // }
+                            })
+                            console.log(data,arr)
+                            commit('setShopInfo', data)
 
-                    commit('setCategoryFood', arr)
+                            commit('setCategoryFood', arr)
+                        }
+                    })
+                    
 
-                }
-            })
+            //     }
+            // })
         }
     },
 }

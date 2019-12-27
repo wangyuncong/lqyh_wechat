@@ -1,3 +1,11 @@
+<!--
+ * @Descripttion: 
+ * @version: 
+ * @Author: 
+ * @Date: 2019-10-31 11:33:55
+ * @LastEditors: 
+ * @LastEditTime: 2019-12-02 16:52:59
+ -->
 <template>
   <div id="app">
     <router-view v-wechat-title="$route.meta.title" />
@@ -5,6 +13,7 @@
 </template>
 
 <script>
+import { Indicator } from "mint-ui";
 import urlencode from "urlencode";
 export default {
   name: "App",
@@ -12,6 +21,10 @@ export default {
     return {};
   },
   async created() {
+    Indicator.open({
+      text: "加载中...",
+      spinnerType: "fading-circle"
+    });
     this.wxconfig();
     if (sessionStorage.openid) {
       let obj = {
@@ -25,6 +38,7 @@ export default {
           sessionStorage.userId = data[0].id;
           this._Vuex.state.userInfo = data[0];
           sessionStorage.userid = data[0].id;
+          Indicator.close();
         }
       });
       return;
@@ -39,13 +53,17 @@ export default {
         theRequest[strs[i].split("=")[0]] = strs[i].split("=")[1];
       }
     }
-
+    
     if (
       process.env.NODE_ENV === "production" &&
       !theRequest.code &&
-      !location.href.includes("shareThePage")
+      (!location.href.includes("shareThePage") &&
+        !location.href.includes("myqrcode") &&
+        !location.href.includes("myAdvice?userid")) &&
+        !location.href.includes("paySuccess")
     ) {
       let redirect_uri = location.href;
+      
       window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2b3de230eec21649&redirect_uri=${urlencode(
         redirect_uri
       )}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`;
@@ -70,6 +88,7 @@ export default {
             success: res => {
               sessionStorage.userid = res[0].id;
               this._Vuex.state.userInfo = res[0];
+              Indicator.close();
             }
           });
         }
@@ -96,7 +115,7 @@ export default {
               "onMenuShareTimeline"
             ] // 必填，需要使用的JS接口列表
           });
-          this.$root.share = res.share
+          this.$root.share = res.share;
         }
       });
     }
@@ -109,5 +128,13 @@ export default {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+.mint-indicator {
+  position: relative;
+  z-index: 10000;
+}
+.v-modal{
+  
+    opacity: .8 !important;
 }
 </style>
